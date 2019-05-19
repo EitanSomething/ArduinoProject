@@ -19,9 +19,10 @@ signals:
 	void counterReached();
 	
 private slots:
+	void updateData();
+
 private:
 	QTimer* m_timer;
-	
 };
 
 #endif // MAINWINDOW_H

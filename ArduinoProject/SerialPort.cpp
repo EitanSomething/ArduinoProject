@@ -4,8 +4,6 @@
 std::vector<std::vector<CString>> PortNameAndSerialNumber;
 std::vector<CString> PortName;
 int numberofPorts;
-int maxNumberOfPatients;
-
 
 Serial* SP = new Serial("\\\\.\\COM3");
 Serial* SP1 = new Serial("\\\\.\\COM4");
@@ -13,80 +11,62 @@ Serial* SP1 = new Serial("\\\\.\\COM4");
 
 void GetDataFromArduino() {
 	
-	
-	
+	char incomingData[256] = "";
 
-	if (SP->IsConnected())
-		printf("We're connected");
+	int dataLength = 255;
+	int readResult = 0;
+
+	
 
 	if (SP->IsConnected())
 	{
-		char incomingData[256] = "";			// don't forget to pre-allocate memory
 	//printf("%s\n",incomingData);
-		int dataLength = 255;
-		int readResult = 0;
 		readResult = SP->ReadData(incomingData, dataLength);
 		// printf("Bytes read: (0 means no data available) %i\n",readResult);
 		incomingData[readResult] = 0;
 		std::string outoutdata(incomingData);
-		std::cout << outoutdata << "\n";
 		OrganizeData(outoutdata);
+
 	}
-	if (SP1->IsConnected())
-		printf("We're connected");
+	
 
 	if (SP1->IsConnected())
 	{
-		char incomingData[256] = "";			// don't forget to pre-allocate memory
-	//printf("%s\n",incomingData);
-		int dataLength = 255;
-		int readResult = 0;
+	   //printf("%s\n",incomingData);
 		readResult = SP1->ReadData(incomingData, dataLength);
 		// printf("Bytes read: (0 means no data available) %i\n",readResult);
 		incomingData[readResult] = 0;
 		std::string outoutdata(incomingData);
-		std::cout << outoutdata << "\n";
 		OrganizeData(outoutdata);
 	}
 
+
 }
 void OrganizeData(std::string input) {
-
 	std::fstream outPutFileroom;
-	std::fstream outPutFilehall;
 	std::fstream outPutFileroom1;
+	std::fstream outPutFilehall;
 	std::fstream outPutFilehall1;
-
-	std::ifstream roomfile("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\room.csv");
-	std::ifstream hallfile("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall.csv");
-	outPutFileroom.open("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\room.csv", std::ios::in);
-	outPutFilehall.open("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall.csv", std::ios::in);
-	outPutFilehall1.open("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall1.csv", std::ios::out);
-	outPutFileroom1.open("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\room1.csv", std::ios::out);
-	remove("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\room1.csv");
-	remove("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall1.csv");
-
-
-	std::string csvItemRoom;
-	std::string csvItemHall;
-
 	int linesRoom = 0;
 	int linesHall = 0;
-	while (std::getline(roomfile, csvItemRoom)) {
-		linesRoom++;
-	}
-	while (std::getline(hallfile, csvItemHall)) {
-		linesHall++;
-	}
-	
 
+	std::string csvItemHall;
+	std::string csvItemRoom;
+
+	std::ifstream hallfile("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall.csv");
+	std::ifstream roomfile("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\room.csv");
+	outPutFileroom.open("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\room.csv", std::ios::in);
+
+	outPutFileroom1.open("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\room1.csv", std::ios::out);
 	if ((input.substr(0, 4)) == "room") {
+
+		while (std::getline(roomfile, csvItemRoom)) {
+			linesRoom++;
+		}
+	
 		int roomNumber = std::stoi(input.substr(4, (input.find_first_of("occupancy", 4)) - 4));
 		int occupancystrlocation = (input.find_first_of("occupancy", 4)) + 9;
 		int numberOfPatients = std::stoi(input.substr(occupancystrlocation, input.find_first_of("patient1", occupancystrlocation) - occupancystrlocation));
-		if (maxNumberOfPatients < numberOfPatients) {
-			maxNumberOfPatients = numberOfPatients;
-		}
 
 		for (int f = 0; f < linesRoom; f++) {
 			std::string line;
@@ -103,10 +83,10 @@ void OrganizeData(std::string input) {
 				outPutFileroom1 << numberOfPatients << ",";
 
 
-				for (int j = 1; j <= numberOfPatients; j++) {
+				for (uint8_t j = 1; j <= numberOfPatients; j++) {
 					
 					if ((input.find("patient" + std::to_string(j)) != -1) && ((input.find("patient" + std::to_string(j)) + 8 + std::to_string(j).length()) < input.length())) {
-						int patientok = std::stoi(input.substr((input.find(("patient" + std::to_string(j)), 0)) + (7 + std::to_string(j).length()), (input.find("patient" + std::to_string(j + 1), 0) - (input.find("patient" + std::to_string(j), 0) + 7 + std::to_string(j).length()))));
+						bool patientok = std::stoi(input.substr((input.find(("patient" + std::to_string(j)), 0)) + (7 + std::to_string(j).length()), (input.find("patient" + std::to_string(j + 1), 0) - (input.find("patient" + std::to_string(j), 0) + 7 + std::to_string(j).length()))));
 						if(j == numberOfPatients){
 							outPutFileroom1 << patientok;
 						}
@@ -137,6 +117,11 @@ void OrganizeData(std::string input) {
 	}
 	else if ((input.substr(0, 4)) == "hall") {
 
+		while (std::getline(hallfile, csvItemHall)) {
+			linesHall++;
+		}
+
+		
 		int hallnumber = std::stoi(input.substr(4, (input.find_first_of("occupancy", 4)) - 4));
 		int occupancystrlocation = (input.find_first_of("occupancy", 4)) + 9;
 		int numberOfPatients = std::stoi(input.substr(occupancystrlocation));
@@ -167,6 +152,7 @@ void OrganizeData(std::string input) {
 		remove("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall.csv");
 		rename("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall1.csv", "C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall.csv");
 		remove("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall1.csv");
+		
 	}
 	else {
 		outPutFilehall1.close();
@@ -176,6 +162,7 @@ void OrganizeData(std::string input) {
 		hallfile.close();
 		roomfile.close();
 	}
+	
 	
 }
 void portNameAndSerialNumber() {

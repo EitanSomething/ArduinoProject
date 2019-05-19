@@ -32,16 +32,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_timer = new QTimer(this);
 
 	m_timer->start(1000); // for a 1 second interval
-
+	QTimer *timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+	timer->start(1000);
+	connect(timer, SIGNAL(timeout()), this, SLOT(updateData()));
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(update()));
 	connect(this, SIGNAL(counterReached()), QApplication::instance(), SLOT(quit()));
 
 }
-
 void MainWindow::paintEvent(QPaintEvent *event)
 {
-	GetDataFromArduino();
-	std::cout << "exit";
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
 	painter.setPen(Qt::black);
@@ -119,4 +119,9 @@ void MainWindow::paintEvent(QPaintEvent *event)
 	}
 	fileRoom.close();
 	fileHall.close();
+}
+
+void MainWindow::updateData()
+{
+	GetDataFromArduino();
 }
