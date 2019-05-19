@@ -5,8 +5,8 @@ std::vector<std::vector<CString>> PortNameAndSerialNumber;
 std::vector<CString> PortName;
 int numberofPorts;
 
-Serial* SP = new Serial("\\\\.\\COM3");
-Serial* SP1 = new Serial("\\\\.\\COM4");
+Serial* SP = new Serial("\\\\.\\COM19");
+Serial* SP1 = new Serial("\\\\.\\COM25");
 
 
 void GetDataFromArduino() {
@@ -55,6 +55,9 @@ void OrganizeData(std::string input) {
 
 	std::ifstream hallfile("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall.csv");
 	std::ifstream roomfile("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\room.csv");
+	outPutFilehall.open("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall.csv", std::ios::in);
+
+	outPutFilehall1.open("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\hall1.csv", std::ios::out);
 	outPutFileroom.open("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\room.csv", std::ios::in);
 
 	outPutFileroom1.open("C:\\Users\\Eitan\\source\\repos\\ArduinoProject\\ArduinoProject\\room1.csv", std::ios::out);
