@@ -63,6 +63,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <AdditionalUsingDirectories>C:\Qt\5.12.1\msvc2017_64\lib;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <CompileAsManaged>true</CompileAsManaged>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

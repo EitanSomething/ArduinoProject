@@ -21,22 +21,24 @@ MainWindow::MainWindow(QWidget *parent) :
 	QWidget(parent)
 {
 	// Set size of the window
-	
+
 	setMinimumSize(160, 160);
 	resize(480, 320);
 	// Create and position the button
 	// Set the counter to 0
 
 	// Convert a TCHAR string to a LPCSTR
-	
+
 	m_timer = new QTimer(this);
 
-	m_timer->start(1000); // for a 1 second interval
 	QTimer *timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-	timer->start(1000);
-	connect(timer, SIGNAL(timeout()), this, SLOT(updateData()));
+	timer->start(50);
+	m_timer->start(33);
+
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(update()));
+	connect(timer, SIGNAL(timeout()), this, SLOT(updateData()));
+
+
 	connect(this, SIGNAL(counterReached()), QApplication::instance(), SLOT(quit()));
 
 }
@@ -55,37 +57,39 @@ void MainWindow::paintEvent(QPaintEvent *event)
 			painter.drawText(0, 0, 75, 25, Qt::AlignCenter, "Rooms");
 		}
 		else if (lines > 0) {
-			for (int i = 0; i < std::stoi(csvItemRoom.substr(2, 1))+2; i++) {
-				if ((i > 1) && (std::stoi(csvItemRoom.substr(i * 2, 1).c_str()) == 1)) {
-					painter.setBrush(QBrush("#027f19"));
-					painter.drawRect(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25);
+			for (int i = 0; i < std::stoi(csvItemRoom.substr(2, 1)) + 2; i++) {
+				if (i * 2 < csvItemRoom.length()) {
+					if ((i > 1) && (std::stoi(csvItemRoom.substr(i * 2, 1).c_str()) == 1)) {
+						painter.setBrush(QBrush("#027f19"));
+						painter.drawRect(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25);
 
-					painter.drawText(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25, Qt::AlignCenter, std::to_string(i-1).c_str());
+						painter.drawText(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25, Qt::AlignCenter, std::to_string(i - 1).c_str());
 
+					}
+					else if ((i > 1) && (std::stoi(csvItemRoom.substr(i * 2, 1).c_str()) == 0)) {
+						painter.setBrush(QBrush("#c90808"));
+						painter.drawRect(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25);
+
+						painter.drawText(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25, Qt::AlignCenter, std::to_string(i - 1).c_str());
+
+					}
+					else if (i == 1) {
+						painter.setBrush(QBrush("#6842f4"));
+						painter.drawRect(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25);
+
+						painter.drawText(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25, Qt::AlignCenter, csvItemRoom.substr(i * 2, 1).c_str());
+
+					}
+					else if (i == 0) {
+						painter.setBrush(QBrush("#f4eb41"));
+						painter.drawRect(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25);
+
+						painter.drawText(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25, Qt::AlignCenter, csvItemRoom.substr(i * 2, 1).c_str());
+
+					}
 				}
-				else if ((i > 1) && (std::stoi(csvItemRoom.substr(i * 2, 1).c_str()) == 0)) {
-					painter.setBrush(QBrush("#c90808"));
-					painter.drawRect(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25);
 
-					painter.drawText(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25, Qt::AlignCenter, std::to_string(i - 1).c_str());
 
-				}
-				else if (i == 1) {
-					painter.setBrush(QBrush("#6842f4"));
-					painter.drawRect(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25);
-
-					painter.drawText(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25, Qt::AlignCenter, csvItemRoom.substr(i * 2, 1).c_str());
-
-				}
-				else {
-					painter.setBrush(QBrush("#f4eb41"));
-					painter.drawRect(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25);
-
-					painter.drawText(0 + (75 * i), 25 + (25 * (lines - 1)), 75, 25, Qt::AlignCenter, csvItemRoom.substr(i * 2, 1).c_str());
-
-				}
-
-				
 			}
 		}
 		lines++;
@@ -98,18 +102,18 @@ void MainWindow::paintEvent(QPaintEvent *event)
 		}
 		else if (lines > 0) {
 			for (int i = 0; i < 2; i++) {
-				if ((i==1)&&(std::stoi(csvItemHall.substr(i * 2, 1).c_str())==1)) {
+				if ((i == 1) && (std::stoi(csvItemHall.substr(i * 2, 1).c_str()) == 1)) {
 					painter.setBrush(QBrush("#c90808"));
 
 				}
-				else if((i == 1) && (std::stoi(csvItemHall.substr(i * 2, 1).c_str()) == 0)) {
+				else if ((i == 1) && (std::stoi(csvItemHall.substr(i * 2, 1).c_str()) == 0)) {
 					painter.setBrush(QBrush("#027f19"));
 				}
 				else {
 					painter.setBrush(QBrush("#f4eb41"));
 
 				}
-				painter.drawRect(0 + (75 * i), (25* offset) + (25 * (lines)), 75, 25);
+				painter.drawRect(0 + (75 * i), (25 * offset) + (25 * (lines)), 75, 25);
 				painter.drawText(0 + (75 * i), (25 * offset) + (25 * (lines)), 75, 25, Qt::AlignCenter, csvItemHall.substr(i * 2, 1).c_str());
 
 

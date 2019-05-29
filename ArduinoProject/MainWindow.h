@@ -14,12 +14,14 @@ class MainWindow : public QWidget
 	Q_OBJECT
 public:
 	explicit MainWindow(QWidget *parent = 0);
-	void paintEvent(QPaintEvent *event);
+	
 signals:
 	void counterReached();
 	
 private slots:
 	void updateData();
+protected:
+	void paintEvent(QPaintEvent *event);
 
 private:
 	QTimer* m_timer;
